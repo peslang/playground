@@ -1,0 +1,424 @@
+{
+  "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+  "name": "Pes",
+  "scopeName": "source.pes",
+  "patterns": [
+    { "include": "#comment" },
+    { "include": "#string" },
+    { "include": "#type-literal" },
+    { "include": "#map-literal-empty" },
+    { "include": "#typed-collection-prefix" },
+    { "include": "#array-literal" },
+    { "include": "#collection-braced-literal" },
+    { "include": "#number" },
+    { "include": "#constant" },
+    { "include": "#collection-type" },
+    { "include": "#task-type" },
+    { "include": "#type-name" },
+    { "include": "#annotation" },
+    { "include": "#keyword-extension" },
+    { "include": "#this-parameter" },
+    { "include": "#keyword-await" },
+    { "include": "#keyword" },
+    { "include": "#operator" }
+  ],
+  "repository": {
+    "comment": {
+      "patterns": [
+        {
+          "name": "comment.line.pes",
+          "match": "//.*$"
+        },
+        {
+          "name": "comment.block.pes",
+          "begin": "/\\*",
+          "end": "\\*/"
+        }
+      ]
+    },
+    "string": {
+      "patterns": [
+        {
+          "name": "string.quoted.double.pes",
+          "begin": "\"",
+          "end": "(?<![\\\\])\""
+        }
+      ]
+    },
+    "string-escape": {
+      "patterns": [
+        {
+          "name": "constant.character.escape.pes",
+          "match": "\\\\."
+        }
+      ]
+    },
+    "string-interpolation": {
+      "patterns": [
+        { "include": "#string-interpolation-dollar-brace" },
+        { "include": "#string-interpolation-percent-brace" },
+        { "include": "#string-interpolation-percent-paren" },
+        { "include": "#string-interpolation-percent-simple" },
+        { "include": "#string-interpolation-dollar-simple" }
+      ]
+    },
+    "string-interpolation-dollar-brace": {
+      "name": "meta.template.expression",
+      "begin": "(?<![\\\\])\\$\\{",
+      "beginCaptures": {
+        "0": { "name": "punctuation.definition.template-expression.begin" }
+      },
+      "end": "\\}",
+      "endCaptures": {
+        "0": { "name": "punctuation.definition.template-expression.end" }
+      },
+      "patterns": [
+        {
+          "begin": "\\|",
+          "end": "(?=\\})",
+          "beginCaptures": {
+            "0": { "name": "punctuation.separator.format" }
+          },
+          "patterns": [
+            {
+              "match": "[^}]+",
+              "name": "constant.other.format-specifier"
+            }
+          ]
+        },
+        {
+          "begin": "(?<=\\{)",
+          "end": "(?=\\||\\})",
+          "contentName": "meta.embedded.expression.pes",
+          "patterns": [
+            { "include": "#source-inline" }
+          ]
+        }
+      ]
+    },
+    "string-interpolation-percent-brace": {
+      "name": "meta.template.expression",
+      "begin": "(?<![\\\\])%\\{",
+      "beginCaptures": {
+        "0": { "name": "punctuation.definition.template-expression.begin" }
+      },
+      "end": "\\}",
+      "endCaptures": {
+        "0": { "name": "punctuation.definition.template-expression.end" }
+      },
+      "contentName": "meta.embedded.expression.pes",
+      "patterns": [
+        { "include": "#source-inline" }
+      ]
+    },
+    "string-interpolation-percent-paren": {
+      "name": "meta.template.expression",
+      "begin": "(?<![\\\\])%\\(",
+      "beginCaptures": {
+        "0": { "name": "punctuation.definition.template-expression.begin" }
+      },
+      "end": "\\)",
+      "endCaptures": {
+        "0": { "name": "punctuation.definition.template-expression.end" }
+      },
+      "contentName": "meta.embedded.expression.pes",
+      "patterns": [
+        { "include": "#source-inline" }
+      ]
+    },
+    "string-interpolation-percent-simple": {
+      "match": "(?<![\\\\])(%)([A-Za-zА-Яа-яЁё_][A-Za-zА-Яа-яЁё0-9_]*)",
+      "captures": {
+        "1": { "name": "punctuation.definition.template-expression.begin" },
+        "2": { "name": "variable.other.readwrite" }
+      }
+    },
+    "string-interpolation-dollar-simple": {
+      "match": "(?<![\\\\])(\\$)([A-Za-zА-Яа-яЁё_][A-Za-zА-Яа-яЁё0-9_]*)",
+      "captures": {
+        "1": { "name": "punctuation.definition.template-expression.begin" },
+        "2": { "name": "variable.other.readwrite" }
+      }
+    },
+    "source-inline": {
+      "patterns": [
+        { "include": "#number" },
+        { "include": "#constant" },
+        { "include": "#task-type" },
+        { "include": "#collection-type" },
+        { "include": "#type-name" },
+        { "include": "#keyword-await" },
+        { "include": "#keyword" },
+        { "include": "#operator" },
+        {
+          "match": "[A-Za-zА-Яа-яЁё_][A-Za-zА-Яа-яЁё0-9_]*",
+          "name": "variable.other.readwrite"
+        }
+      ]
+    },
+    "type-literal": {
+      "patterns": [
+        {
+          "name": "constant.other.literal.pes",
+          "match": "(?<![A-Za-zА-Яа-яЁё0-9_])(?:Момент|Moment|Дата|Date|Время|Time|ДатаВремя|DateTime|Байты|Bytes|Ууид|Uuid|Тип|Type|ЧасовойПояс|ЧасоваяЗона|TimeZone)\\{[^{}]*\\}"
+        }
+      ]
+    },
+    "number": {
+      "patterns": [
+        {
+          "name": "constant.numeric.pes",
+          "match": "(?<![A-Za-zА-Яа-яЁё0-9_.])(?:\\d+(?:\\.\\d+)?(?:мс|мин|дн|с|ч)|0[xX][0-9a-fA-F]+|0[bB][01]+|\\d+\\.\\d+|\\d+)(?![A-Za-zА-Яа-яЁё0-9_])"
+        }
+      ]
+    },
+    "constant": {
+      "patterns": [
+        {
+          "name": "constant.language.pes",
+          "match": "(?<![A-Za-zА-Яа-яЁё0-9_])(?:Истина|True|Ложь|False|Неопределено|Undefined)(?![A-Za-zА-Яа-яЁё0-9_])"
+        }
+      ]
+    },
+    "type-name": {
+      "patterns": [
+        {
+          "name": "support.type.pes",
+          "match": "(?<![A-Za-zА-Яа-яЁё0-9_])(?:Число|Number|Булево|Boolean|Строка|String|Дата|Date|Время|Time|ДатаВремя|DateTime|Длительность|Duration|Момент|Moment|Объект|Object|Байты|Bytes|Исключение|Exception|ЧасовойПояс|ЧасоваяЗона|TimeZone|Задача|Task|Массив|Array|ЧитаемыйМассив|Множество|Set|ЧитаемоеМножество|Соответствие|Map|ЧитаемоеСоответствие|КлючИЗначение|KeyValue)(?![A-Za-zА-Яа-яЁё0-9_])"
+        }
+      ]
+    },
+    "type-in-params": {
+      "patterns": [
+        { "include": "#type-name" },
+        {
+          "match": ",",
+          "name": "punctuation.separator.comma.pes"
+        }
+      ]
+    },
+    "collection-type": {
+      "patterns": [
+        {
+          "name": "meta.type.generic.collection.pes",
+          "begin": "(?<![A-Za-zА-Яа-яЁё0-9_])(Массив|Array|ЧитаемыйМассив|Множество|Set|ЧитаемоеМножество|Соответствие|Map|ЧитаемоеСоответствие|КлючИЗначение|KeyValue)(<)",
+          "beginCaptures": {
+            "1": { "name": "support.type.collection.pes" },
+            "2": { "name": "punctuation.definition.typeparameters.begin.pes" }
+          },
+          "end": ">",
+          "endCaptures": {
+            "0": { "name": "punctuation.definition.typeparameters.end.pes" }
+          },
+          "patterns": [
+            { "include": "#type-in-params" }
+          ]
+        }
+      ]
+    },
+    "typed-collection-prefix": {
+      "match": "(?<![A-Za-zА-Яа-яЁё0-9_>])(<)([A-Za-zА-Яа-яЁё_][A-Za-zА-Яа-яЁё0-9_,\\s]*)(>)(?=[\\[{])",
+      "captures": {
+        "1": { "name": "punctuation.definition.typeparameters.begin.pes" },
+        "2": { "name": "support.type.pes" },
+        "3": { "name": "punctuation.definition.typeparameters.end.pes" }
+      }
+    },
+    "array-literal": {
+      "match": "(\\[)([^\\[\\]]*(?:\"(?:[^\"\\\\]|\\\\.)*\"[^\\[\\]]*)*)(\\])",
+      "captures": {
+        "1": { "name": "punctuation.definition.array.begin.pes" },
+        "2": { "name": "meta.collection.literal.content.pes" },
+        "3": { "name": "punctuation.definition.array.end.pes" }
+      }
+    },
+    "map-literal-empty": {
+      "name": "meta.map.literal.pes",
+      "match": "(?<![A-Za-zА-Яа-яЁё0-9_])(\\{)(:)(\\})",
+      "captures": {
+        "1": { "name": "punctuation.definition.map.begin.pes" },
+        "2": { "name": "punctuation.definition.map.empty.pes" },
+        "3": { "name": "punctuation.definition.map.end.pes" }
+      }
+    },
+    "collection-braced-literal": {
+      "match": "(?<![A-Za-zА-Яа-яЁё0-9_])(\\{)([^\\{\\}]*(?:\"(?:[^\"\\\\]|\\\\.)*\"[^\\{\\}]*)*)(\\})",
+      "captures": {
+        "1": { "name": "punctuation.definition.braces.begin.pes" },
+        "2": { "name": "meta.collection.literal.content.pes" },
+        "3": { "name": "punctuation.definition.braces.end.pes" }
+      }
+    },
+    "map-literal-markers": {
+      "patterns": [
+        {
+          "match": "=>",
+          "name": "punctuation.separator.key-value.pes"
+        },
+        {
+          "match": "(?<=[A-Za-zА-Яа-яЁё0-9_\"\\])\\s*(:)\\s*(?=[\"A-Za-zА-Яа-яЁё0-9_\\[{])",
+          "captures": {
+            "1": { "name": "punctuation.separator.key-value.pes" }
+          }
+        }
+      ]
+    },
+    "collection-literal-inner": {
+      "patterns": [
+        { "include": "#map-literal-markers" },
+        { "include": "#number" },
+        { "include": "#constant" },
+        {
+          "match": "\"(?:[^\"\\\\]|\\\\.)*\"",
+          "name": "string.quoted.double.pes"
+        },
+        {
+          "match": ",",
+          "name": "punctuation.separator.comma.pes"
+        }
+      ]
+    },
+    "task-type": {
+      "patterns": [
+        {
+          "name": "meta.type.generic.pes",
+          "begin": "(?<![A-Za-zА-Яа-яЁё0-9_])(Задача|Task)(<)",
+          "beginCaptures": {
+            "1": { "name": "support.type.pes" },
+            "2": { "name": "punctuation.definition.typeparameters.begin.pes" }
+          },
+          "end": ">",
+          "endCaptures": {
+            "0": { "name": "punctuation.definition.typeparameters.end.pes" }
+          },
+          "patterns": [
+            { "include": "#type-name" },
+            { "include": "#task-type" }
+          ]
+        }
+      ]
+    },
+    "keyword-extension": {
+      "patterns": [
+        {
+          "name": "storage.modifier.extension.pes",
+          "match": "(?<![A-Za-zА-Яа-яЁё0-9_])(?:расширение|extension)(?![A-Za-zА-Яа-яЁё0-9_])"
+        }
+      ]
+    },
+    "this-parameter": {
+      "patterns": [
+        {
+          "match": "(?<![A-Za-zА-Яа-яЁё0-9_])(этот|this)\\s+([A-Za-zА-Яа-яЁё_][A-Za-zА-Яа-яЁё0-9_]*)\\s*:",
+          "captures": {
+            "1": { "name": "keyword.other.this" },
+            "2": { "name": "variable.parameter" }
+          }
+        }
+      ]
+    },
+    "keyword-await": {
+      "patterns": [
+        {
+          "name": "keyword.control.await.pes",
+          "match": "(?<![A-Za-zА-Яа-яЁё0-9_])(?:ждать|await)(?![A-Za-zА-Яа-яЁё0-9_])"
+        }
+      ]
+    },
+    "keyword": {
+      "patterns": [
+        {
+          "name": "keyword.control.pes",
+          "match": "(?<![A-Za-zА-Яа-яЁё0-9_])(?:иначе\\s+если|else\\s+if|constructor|конструктор|enumeration|перечисление|exception|исключение|structure|структура|abstract|абстрактный|async|асинх|static|статический|continue|продолжить|умолчание|default|finally|вконце|import|импорт|export|экспорт|method|метод|return|возврат|throw|выбросить|break|прервать|while|пока|catch|поймать|else|иначе|when|когда|выбор|case|try|попытка|class|класс|contract|контракт|for|для|loop|цикл|step|шаг|down|вниз|scope|область|const|конст|void|ничто|unknown|неизвестно|any|любой|this|этот|base|базовый|new|новый|use|исп|var|пер|val|знч|oblig|обз|if|если|not|не|and|и|or|или|as|как|is|это|in|из|to|по)(?![A-Za-zА-Яа-яЁё0-9_])"
+        }
+      ]
+    },
+    "operator": {
+      "patterns": [
+        {
+          "name": "keyword.operator.pes",
+          "match": "->|=>|\\*\\*|\\?\\?|\\?\\.|::|==|!=|<=|>=|\\+=|-=|\\*=|/=|%=|[+\\-*/%=<>?:]"
+        }
+      ]
+    },
+    "annotation": {
+      "patterns": [
+        { "include": "#annotation-with-args" },
+        { "include": "#annotation-visibility" },
+        { "include": "#annotation-known" },
+        { "include": "#annotation-generic" }
+      ]
+    },
+    "annotation-with-args": {
+      "name": "meta.annotation.pes",
+      "begin": "(@)([A-Za-zА-Яа-яЁё_][A-Za-zА-Яа-яЁё0-9_]*)\\s*(\\()",
+      "beginCaptures": {
+        "1": { "name": "punctuation.decorator.pes" },
+        "2": { "name": "entity.name.tag.annotation.pes" },
+        "3": { "name": "punctuation.section.begin.pes" }
+      },
+      "end": "\\)",
+      "endCaptures": {
+        "0": { "name": "punctuation.section.end.pes" }
+      },
+      "patterns": [
+        { "include": "#annotation-body" }
+      ]
+    },
+    "annotation-body": {
+      "patterns": [
+        { "include": "#annotation" },
+        { "include": "#string" },
+        { "include": "#number" },
+        { "include": "#constant" },
+        {
+          "match": "([A-Za-zА-Яа-яЁё_][A-Za-zА-Яа-яЁё0-9_]*)\\s*=",
+          "captures": {
+            "1": { "name": "variable.parameter.pes" }
+          }
+        },
+        {
+          "match": ",",
+          "name": "punctuation.separator.comma.pes"
+        }
+      ]
+    },
+    "annotation-visibility": {
+      "name": "meta.annotation.visibility.pes",
+      "match": "(@)(Локально|ВПодсистеме|ВПроекте|ВТипе|Глобально)(?![A-Za-zА-Яа-яЁё0-9_])",
+      "captures": {
+        "1": { "name": "punctuation.decorator.pes" },
+        "2": { "name": "storage.modifier.pes" }
+      }
+    },
+    "annotation-known": {
+      "name": "meta.annotation.known.pes",
+      "match": "(@)(Переопределение|Реализация|ИменованныеПараметры|Устарело|Контекстный|Обработчик|Подписка|ДоступноСКлиента|НаКлиенте|НаСервере)(?![A-Za-zА-Яа-яЁё0-9_])",
+      "captures": {
+        "1": { "name": "punctuation.decorator.pes" },
+        "2": { "name": "keyword.other.annotation.pes" }
+      }
+    },
+    "annotation-generic": {
+      "name": "meta.annotation.pes",
+      "match": "(@)([A-Za-zА-Яа-яЁё_][A-Za-zА-Яа-яЁё0-9_]*)",
+      "captures": {
+        "1": { "name": "punctuation.decorator.pes" },
+        "2": { "name": "entity.name.tag.annotation.pes" }
+      }
+    }
+  },
+  "injections": {
+    "L:string.quoted.double.pes": {
+      "patterns": [
+        { "include": "#string-escape" },
+        { "include": "#string-interpolation" }
+      ]
+    },
+    "L:meta.collection.literal.content.pes": {
+      "patterns": [
+        { "include": "#collection-literal-inner" }
+      ]
+    }
+  }
+}

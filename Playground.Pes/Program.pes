@@ -1,0 +1,64 @@
+// Playground на Pes — parity с Playground.Api (static + /api/run + SandboxRunner)
+// prespecs: aspnet-interop
+
+импорт System
+импорт System::Threading
+импорт Services
+импорт Microsoft::AspNetCore::Builder
+импорт Microsoft::AspNetCore::Hosting
+импорт Microsoft::AspNetCore::Http
+импорт Microsoft::Extensions::Hosting
+
+@Глобально
+класс ЗапросЗапуска
+    @Глобально
+    пер source: Строка
+;
+
+@Глобально
+класс ОтветЗапуска
+    @Глобально
+    пер success: Булево
+    @Глобально
+    пер exitCode: Число
+    @Глобально
+    пер output: Строка
+;
+
+@Глобально
+класс ОшибкаЗапроса
+    @Глобально
+    пер error: Строка
+;
+
+пер builder = WebApplication.CreateBuilder(Environment.GetCommandLineArgs())
+пер app = builder.Build()
+
+app.UseDefaultFiles()
+app.UseStaticFiles()
+app.MapGet("/health", &Health)
+app.MapPost("/api/run", &ОбработчикЗапуска)
+
+app.Run()
+
+метод Health(): Строка
+    возврат "ok"
+;
+
+метод ОбработчикЗапуска(
+    запрос: ЗапросЗапуска,
+    отмена: CancellationToken): IResult
+    если String.IsNullOrWhiteSpace(запрос.source)
+        пер err = новый ОшибкаЗапроса()
+        err.error = "Исходный код не может быть пустым."
+        возврат Results.BadRequest(err)
+    ;
+
+    пер sandbox = новый Песочница()
+    пер результат = sandbox.Запустить(запрос.source, отмена)
+    пер ответ = новый ОтветЗапуска()
+    ответ.success = результат.Success
+    ответ.exitCode = результат.ExitCode
+    ответ.output = результат.Output
+    возврат Results.Ok(ответ)
+;

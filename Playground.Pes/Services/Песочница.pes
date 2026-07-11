@@ -1,0 +1,152 @@
+импорт System
+импорт System::Diagnostics
+импорт System::IO
+импорт System::Text
+импорт System::Threading
+
+@Глобально
+класс РезультатЗапуска
+    @Глобально
+    обз пер Success: Булево
+    @Глобально
+    обз пер ExitCode: Число
+    @Глобально
+    обз пер Output: Строка
+
+    конструктор(success: Булево, exitCode: Число, output: Строка)
+        Success = success
+        ExitCode = exitCode
+        Output = output
+    ;
+;
+
+@Глобально
+класс Песочница
+    пер МаксСимволовВывода: Число = 65536
+    пер ТаймаутСекунд: Число = 30
+    пер ИмяФайлаПроекта: Строка = "Sandbox.psproj"
+    пер ИмяФайлаИсходника: Строка = "Program.pes"
+
+    @ВПроекте
+    метод Запустить(исходник: Строка, отмена: CancellationToken): РезультатЗапуска
+        пер корень: Строка = Path.Combine(Path.GetTempPath(), "pes-playground")
+        Directory.CreateDirectory(корень)
+
+        пер метка: Число = Environment.TickCount
+        пер имяКаталога: Строка = System.Convert.ToString(метка)
+        пер рабочийКаталог: Строка = Path.Combine(корень, имяКаталога)
+        Directory.CreateDirectory(рабочийКаталог)
+
+        File.WriteAllText(
+            Path.Combine(рабочийКаталог, ИмяФайлаПроекта),
+            Песочница.ПолучитьШаблонПроекта(),
+            Encoding.UTF8)
+
+        File.WriteAllText(
+            Path.Combine(рабочийКаталог, ИмяФайлаИсходника),
+            исходник,
+            Encoding.UTF8)
+
+        пер результат = ВыполнитьDotnetRun(рабочийКаталог, отмена)
+        Песочница.ПопытатьсяУдалитьКаталог(рабочийКаталог)
+        возврат результат
+    ;
+
+    статический метод ПолучитьШаблонПроекта(): Строка
+        возврат
+            "<Project Sdk=\"Pes.NET.Sdk/0.1.3\">" + Environment.NewLine +
+            Environment.NewLine +
+            "  <PropertyGroup>" + Environment.NewLine +
+            "    <OutputType>Exe</OutputType>" + Environment.NewLine +
+            "    <TargetFramework>net10.0</TargetFramework>" + Environment.NewLine +
+            "    <RootNamespace></RootNamespace>" + Environment.NewLine +
+            "  </PropertyGroup>" + Environment.NewLine +
+            Environment.NewLine +
+            "</Project>" + Environment.NewLine
+    ;
+
+    метод ВыполнитьDotnetRun(рабочийКаталог: Строка, отмена: CancellationToken): РезультатЗапуска
+        пер процесс: Process = новый Process()
+        пер запуск: ProcessStartInfo = новый ProcessStartInfo()
+        запуск.FileName = "dotnet"
+        запуск.Arguments = "run --project " + ИмяФайлаПроекта
+        запуск.WorkingDirectory = рабочийКаталог
+        запуск.RedirectStandardOutput = Истина
+        запуск.RedirectStandardError = Истина
+        запуск.UseShellExecute = Ложь
+        запуск.CreateNoWindow = Истина
+        запуск.StandardOutputEncoding = Encoding.UTF8
+        запуск.StandardErrorEncoding = Encoding.UTF8
+        процесс.StartInfo = запуск
+
+        если не процесс.Start()
+            процесс.Dispose()
+            возврат новый РезультатЗапуска(Ложь, -1, "Не удалось запустить dotnet.")
+        ;
+
+        пер stdoutTask = процесс.StandardOutput.ReadToEndAsync()
+        пер stderrTask = процесс.StandardError.ReadToEndAsync()
+
+        если не процесс.WaitForExit(ТаймаутСекунд * 1000)
+            Песочница.ПопытатьсяЗавершить(процесс)
+            пер вывод: Строка = ОбрезатьВывод(
+                СобратьВыводТекста(stdoutTask.Result, stderrTask.Result))
+            пер таймаутСообщение: Строка =
+                "[Превышено время выполнения (" + System.Convert.ToString(ТаймаутСекунд) + " с)]"
+            процесс.Dispose()
+            возврат новый РезультатЗапуска(
+                Ложь,
+                -1,
+                вывод + "\n\n" + таймаутСообщение)
+        ;
+
+        пер кодВыхода: Число = процесс.ExitCode
+        пер итог: Строка = ОбрезатьВывод(
+            СобратьВыводТекста(stdoutTask.Result, stderrTask.Result))
+        процесс.Dispose()
+        возврат новый РезультатЗапуска(
+            кодВыхода == 0,
+            кодВыхода,
+            итог)
+    ;
+
+    метод СобратьВыводТекста(stdout: Строка, stderr: Строка): Строка
+        пер stdoutText: Строка = stdout.TrimEnd()
+        пер stderrText: Строка = stderr.TrimEnd()
+
+        если String.IsNullOrEmpty(stdoutText)
+            возврат stderrText
+        ;
+
+        если String.IsNullOrEmpty(stderrText)
+            возврат stdoutText
+        ;
+
+        возврат stdoutText + "\n" + stderrText
+    ;
+
+    метод ОбрезатьВывод(вывод: Строка): Строка
+        если вывод.Length <= МаксСимволовВывода
+            возврат вывод
+        ;
+
+        возврат вывод.Substring(0, МаксСимволовВывода) +
+            "\n[... вывод обрезан ...]"
+    ;
+
+    статический метод ПопытатьсяЗавершить(процесс: Process): ничто
+        попытка
+            если не процесс.HasExited
+                процесс.Kill(entireProcessTree = Истина)
+            ;
+        поймать e: Исключение
+        ;
+    ;
+
+    статический метод ПопытатьсяУдалитьКаталог(путь: Строка): ничто
+        попытка
+            Directory.Delete(path = путь, recursive = Истина)
+        поймать e: Исключение
+        ;
+    ;
+;

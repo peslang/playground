@@ -1,0 +1,22 @@
+# Сборка .NET
+**/bin/
+**/obj/
+**/out/
+
+# IDE
+**/.vs/
+**/.vscode/
+*.user
+*.suo
+
+# Локальные publish / прогоны
+**/test-output/
+**/docker-test-publish/
+**/run/
+**/run*/
+**/test-outputPlayground.*
+
+# Прочее
+*.log
+.DS_Store
+Thumbs.db

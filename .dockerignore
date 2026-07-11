@@ -1,0 +1,6 @@
+**/bin/
+**/obj/
+**/.vs/
+**/.vscode/
+**/test-output/
+**/docker-test-publish/

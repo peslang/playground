@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Пес — Песочница</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div class="playground">
+    <header class="toolbar">
+      <a class="brand" href="/" aria-label="Пес">
+        <img class="brand-logo" src="assets/middlelogo.png" width="36" height="36" alt="">
+        <span class="brand-title">Пес</span>
+        <span class="brand-subtitle">песочница</span>
+      </a>
+      <button id="run-btn" class="run-btn" type="button">Запустить</button>
+    </header>
+
+    <div class="workspace">
+      <section class="editor-pane" aria-label="Редактор кода">
+        <div id="editor"></div>
+      </section>
+
+      <div
+        id="workspace-splitter"
+        class="workspace-splitter"
+        role="separator"
+        aria-orientation="vertical"
+        aria-label="Изменить размер консоли"
+        tabindex="0"></div>
+
+      <section class="console-pane" aria-label="Консоль">
+        <div class="console-header">Консоль</div>
+        <pre id="console-output" class="console-output" aria-live="polite"></pre>
+      </section>
+    </div>
+  </div>
+
+  <script>
+    var require = { paths: { vs: "https://cdn.jsdelivr.net/npm/monaco-editor@0.52.2/min/vs" } };
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/monaco-editor@0.52.2/min/vs/loader.js"></script>
+  <script src="js/pes-language.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
