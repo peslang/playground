@@ -41,7 +41,11 @@
         {
           "name": "string.quoted.double.pes",
           "begin": "\"",
-          "end": "(?<![\\\\])\""
+          "end": "\"",
+          "patterns": [
+            { "include": "#string-escape" },
+            { "include": "#string-interpolation" }
+          ]
         }
       ]
     },
@@ -269,8 +273,12 @@
         { "include": "#number" },
         { "include": "#constant" },
         {
-          "match": "\"(?:[^\"\\\\]|\\\\.)*\"",
-          "name": "string.quoted.double.pes"
+          "begin": "\"",
+          "end": "\"",
+          "name": "string.quoted.double.pes",
+          "patterns": [
+            { "include": "#string-escape" }
+          ]
         },
         {
           "match": ",",

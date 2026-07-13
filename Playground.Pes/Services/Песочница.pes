@@ -33,7 +33,7 @@
         Directory.CreateDirectory(корень)
 
         пер метка: Число = Environment.TickCount
-        пер имяКаталога: Строка = System.Convert.ToString(метка)
+        пер имяКаталога: Строка = System::Convert.ToString(метка)
         пер рабочийКаталог: Строка = Path.Combine(корень, имяКаталога)
         Directory.CreateDirectory(рабочийКаталог)
 
@@ -54,7 +54,7 @@
 
     статический метод ПолучитьШаблонПроекта(): Строка
         возврат
-            "<Project Sdk=\"Pes.NET.Sdk/0.1.3\">" + Environment.NewLine +
+            "<Project Sdk=\"Pes.NET.Sdk/0.1.5\">" + Environment.NewLine +
             Environment.NewLine +
             "  <PropertyGroup>" + Environment.NewLine +
             "    <OutputType>Exe</OutputType>" + Environment.NewLine +
@@ -92,7 +92,7 @@
             пер вывод: Строка = ОбрезатьВывод(
                 СобратьВыводТекста(stdoutTask.Result, stderrTask.Result))
             пер таймаутСообщение: Строка =
-                "[Превышено время выполнения (" + System.Convert.ToString(ТаймаутСекунд) + " с)]"
+                "[Превышено время выполнения (" + System::Convert.ToString(ТаймаутСекунд) + " с)]"
             процесс.Dispose()
             возврат новый РезультатЗапуска(
                 Ложь,
