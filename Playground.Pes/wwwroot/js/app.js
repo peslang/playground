@@ -4,7 +4,7 @@
   var DEFAULT_SOURCE = [
     "импорт System",
     "",
-    "System.Console.WriteLine(\"Привет, мир!\")"
+    "System::Console.WriteLine(\"Привет, мир!\")"
   ].join("\n");
 
   var editor;
