@@ -1,4 +1,4 @@
-<Project Sdk="Pes.NET.Sdk/0.1.5">
+<Project Sdk="Pes.NET.Sdk/0.1.6">
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
