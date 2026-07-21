@@ -102,13 +102,14 @@
 
           [/"/, "string", "@string"],
 
-          [/@(Локально|ВПодсистеме|ВПроекте|ВТипе|Глобально)/, ["annotation.decorator", "annotation.visibility"]],
-          [new RegExp("@(" + knownAnnotations.map(escapeRegex).join("|") + ")" + wordEnd), ["annotation.decorator", "annotation"]],
+          [/@(Локально|ВПодсистеме|ВПроекте|ВТипе|Глобально)/, "annotation.visibility"],
+          [new RegExp("@(?:" + knownAnnotations.map(escapeRegex).join("|") + ")" + wordEnd), "annotation"],
           [/(@)([A-Za-zА-Яа-яЁё_][A-Za-zА-Яа-яЁё0-9_]*)/, ["annotation.decorator", "annotation"]],
 
           [wordPattern(["расширение", "extension"]), "modifier.extension"],
           [/(?<![A-Za-zА-Яа-яЁё0-9_])(?:асинх|async)/, "keyword"],
-          [/(?<![A-Za-zА-Яа-яЁё0-9_])(?:этот|this)\s+([A-Za-zА-Яа-яЁё_][A-Za-zА-Яа-яЁё0-9_]*)\s*:/, ["keyword.this", "parameter"]],
+          // Monarch group-actions: число групп == числу токенов, и группы покрывают весь match.
+          [/(?<![A-Za-zА-Яа-яЁё0-9_])(этот|this)(\s+)([A-Za-zА-Яа-яЁё_][A-Za-zА-Яа-яЁё0-9_]*)(\s*)(:)/, ["keyword.this", "white", "parameter", "white", "operator"]],
 
           [new RegExp(wordBoundary + "(" + collectionTypes.map(escapeRegex).join("|") + ")" + wordEnd + "(<)"), ["type.collection", { token: "delimiter.angle", next: "@genericParams" }]],
           [new RegExp(wordBoundary + "(Задача|Task)" + wordEnd + "(<)"), ["type", { token: "delimiter.angle", next: "@genericParams" }]],
