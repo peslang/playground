@@ -1,8 +1,8 @@
 // Playground на Pes — parity с Playground.Api (static + /api/run + SandboxRunner)
 // prespecs: aspnet-interop
 
-импорт System
-импорт System::Threading
+импорт Система
+импорт Система::Многопоточность
 импорт Services
 импорт Microsoft::AspNetCore::Builder
 импорт Microsoft::AspNetCore::Hosting
@@ -31,7 +31,7 @@
     пер error: Строка
 ;
 
-пер builder = WebApplication.CreateBuilder(Environment.GetCommandLineArgs())
+пер builder = WebApplication.CreateBuilder(Окружение.ПолучитьАргументыКоманднойСтроки())
 пер app = builder.Build()
 
 app.UseDefaultFiles()
@@ -48,7 +48,7 @@ app.Run()
 метод ОбработчикЗапуска(
     запрос: ЗапросЗапуска,
     отмена: CancellationToken): IResult
-    если String.IsNullOrWhiteSpace(запрос.source)
+    если String.ПустаяСтрока(запрос.source)
         пер err = новый ОшибкаЗапроса()
         err.error = "Исходный код не может быть пустым."
         возврат Results.BadRequest(err)
@@ -57,8 +57,8 @@ app.Run()
     пер sandbox = новый Песочница()
     пер результат = sandbox.Запустить(запрос.source, отмена)
     пер ответ = новый ОтветЗапуска()
-    ответ.success = результат.Success
-    ответ.exitCode = результат.ExitCode
-    ответ.output = результат.Output
+    ответ.success = результат.Успех
+    ответ.exitCode = результат.КодВыхода
+    ответ.output = результат.Вывод
     возврат Results.Ok(ответ)
 ;

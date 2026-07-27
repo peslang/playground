@@ -2,9 +2,7 @@
   "use strict";
 
   var DEFAULT_SOURCE = [
-    "импорт System",
-    "",
-    "System::Console.WriteLine(\"Привет, мир!\")"
+    "Консоль.ЗаписатьСтроку(\"Дарова, пёс!\")"
   ].join("\n");
 
   var editor;
