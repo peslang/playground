@@ -54,7 +54,7 @@
 
     статический метод ПолучитьШаблонПроекта(): Строка
         возврат
-            "<Project Sdk=\"Pes.NET.Sdk/0.2.3\">" + Окружение.NewLine +
+            "<Project Sdk=\"Pes.NET.Sdk/0.2.5\">" + Окружение.NewLine +
             Окружение.NewLine +
             "  <PropertyGroup>" + Окружение.NewLine +
             "    <OutputType>Exe</OutputType>" + Окружение.NewLine +
